@@ -1,22 +1,14 @@
-name: Pages från main
+name: Publicera
 on:
   push:
     branches: [main]
-  workflow_dispatch:
 permissions:
   contents: write
-  pages: write
 jobs:
-  pages:
+  publicera:
     runs-on: ubuntu-latest
     steps:
-      - name: Sätt Pages-källa till main
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          gh api -X PUT repos/${{ github.repository }}/pages -f "source[branch]=main" -f "source[path]=/"
-          gh api repos/${{ github.repository }}/pages --jq '.source'
-      - name: Ta bort gh-pages
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: gh api -X DELETE repos/${{ github.repository }}/git/refs/heads/gh-pages || true
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - run: git push origin HEAD:gh-pages --force
